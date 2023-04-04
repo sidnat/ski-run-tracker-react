@@ -2,6 +2,7 @@ import './App.css';
 import Map from './components/Map';
 import SignIn from './components/SignIn'
 import Register from './components/Register'
+import UserDashboard from './components/UserDashboard'
 import UserGuard from './components/UserGuard';
 import {
   createBrowserRouter,
@@ -28,6 +29,13 @@ const router = createBrowserRouter([
     element:
       <UserGuard>
         <Map />
+      </UserGuard>
+  },
+  {
+    path: "/userDashboard",
+    element:
+      <UserGuard>
+        <UserDashboard />
       </UserGuard>
   }
 ]);
