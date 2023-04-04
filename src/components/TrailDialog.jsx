@@ -1,44 +1,31 @@
 import { useState } from "react";
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  increment,
-  decrement,
-  isCompleted,
-  selectTrails
-} from '../features/trailsSlice';
 import {
   Button,
   TextField,
   Dialog,
-  DialogActions,
-  DialogContent,
-  Select,
-  MenuItem,
+  // DialogActions,
+  // DialogContent,
+  // Select,
+  // MenuItem,
   Typography,
   Grid,
-  Card,
-  InputLabel,
-  FormControl
+  // Card,
+  // InputLabel,
+  // FormControl
 } from "@mui/material";
-import instance from '../utils/axios'
-import { Cookies } from 'react-cookie'
-
 
 const TrailDialog = (props) => {
-  const dispatch = useDispatch();
   const {
     trailDialogOpen,
     setTrailDialogOpen,
     setTrailIncomplete,
-    trail
+    updateTrailRunCount,
+    trail,
+    blueMountainTrails
   } = props
-  const [inputs, setInputs] = useState({
-    title: "",
-    category: "",
-    note: "",
-  });
-
+  const [runCounterInput, setRunCounterInput] = useState(null);
   //pull counter from redux using trail name
+  const runCounter = blueMountainTrails.trails[trail.name].runCounter
 
   return (
     <Dialog open={trailDialogOpen} onClose={() => setTrailDialogOpen('')}>
@@ -49,10 +36,22 @@ const TrailDialog = (props) => {
         <Typography variant="h4" align="center">
           {trail.difficulty}
         </Typography>
+        <TextField
+          id="outlined-basic"
+          label={runCounter}
+          variant="outlined"
+          onChange={(e) => {
+            setRunCounterInput(e.target.value)
+          }}
+        />
       </Grid>
       <Button onClick={() => {
+        updateTrailRunCount(trail.name, runCounterInput)
+      }}>
+        Update
+      </Button>
+      <Button onClick={() => {
         setTrailIncomplete(trail.name)
-        console.log(Cookies.get('token'))
       }}>
         Not Completed
       </Button>
