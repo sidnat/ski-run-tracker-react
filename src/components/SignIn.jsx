@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+// import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -15,8 +15,13 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import instance from '../utils/axios';
-import { useSelector, useDispatch } from 'react-redux';
-import { addToken, addUser, isLoggedIn, selectUser } from '../features/userSlice';
+import { useDispatch } from 'react-redux';
+import { 
+  addToken,
+  addUser,
+  // isLoggedIn,
+  // selectUser
+} from '../features/userSlice';
 import { useCookies } from 'react-cookie';
 
 const theme = createTheme();
@@ -25,7 +30,7 @@ const SignIn = () => {
   let navigate = useNavigate();
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [cookies, setCookie] = useCookies(['token']);
+  const [, setCookie] = useCookies(['token']);
   // const isLoggedIn = useSelector(selectUser)
   const dispatch = useDispatch()
 
@@ -55,7 +60,7 @@ const SignIn = () => {
 
   const submit = () => {
     console.log('empass', email, password)
-    debugger
+    // debugger
     instance.post("/login", { email, password })
       .then(res => {
         console.log('res', res);
