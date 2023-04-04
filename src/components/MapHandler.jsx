@@ -1,29 +1,32 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState } from "react";
 import { useMapEvent } from "react-leaflet/hooks";
 import { Polyline } from "react-leaflet";
 import blueMountain from './blue-mountain.json'
 import { useSelector, useDispatch } from 'react-redux';
 import {
   increment,
-  decrement,
-  isCompleted,
+  updateRunCount,
   selectTrails
 } from '../features/trailsSlice';
 import TrailDialog from "./TrailDialog";
 import ConfirmDialog from "./ConfirmDialog";
-import { selectUser } from "../features/userSlice";
+// import { selectUser } from "../features/userSlice";
 import instance from "../utils/axios";
-
+import { useCookies } from 'react-cookie';
+import jwt_decode from "jwt-decode";
+import moment from "moment";
 
 const MapHandler = () => {
   const blueMountainTrails = useSelector(selectTrails)
   const mountainName = blueMountainTrails.name
-  const isLoggedIn = useSelector(selectUser)
+  // const isLoggedIn = useSelector(selectUser)
   const dispatch = useDispatch();
   const [clickedTrailName, setClickedTrailName] = useState('');
   const [trailDialogOpen, setTrailDialogOpen] = useState('');
-  // console.log('bmtrail', blueMountainTrails)
+  const [cookies, ] = useCookies(['token']);
+  const decoded = jwt_decode(cookies.token);
 
+  //used to create a trail polyline
   const onDoubleClick = useCallback(
     (e) => {
       console.log([e.latlng.lat, e.latlng.lng])
@@ -32,17 +35,17 @@ const MapHandler = () => {
   );
 
   const setTrailCompleted = (trailName) => {
-    console.log('add run', trailName)
-
-    instance.post('addRun', {
-      //userID : token
+    const run = {
+      userID: decoded.id,
       mountainName,
       trailName,
       runCounter: 1,
-      //date
-    })
+      date: moment().format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    instance.post('addRun', run)
       .then(res => {
-        dispatch(isCompleted(trailName))
+        dispatch(increment(trailName))
         setClickedTrailName('')
       })
       .catch(err => {
@@ -51,13 +54,39 @@ const MapHandler = () => {
   }
 
   const setTrailIncomplete = (trailName) => {
-    console.log('remove run', trailName)
-    instance.post('deleteRun', {
-      // userID: cookies.get('token'),
-    })
+    const run = {
+      userID: decoded.id,
+      mountainName,
+      trailName,
+    }
 
-    dispatch(isCompleted(trailName))
-    setTrailDialogOpen('')
+    instance.post('deleteRun', run)
+      .then(res => {
+        dispatch(updateRunCount({ name: trailName, value: 0 }))
+        setTrailDialogOpen('')
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }
+
+  const updateTrailRunCount = (trailName, newCount) => {
+    console.log('update run', newCount)
+    const run = {
+      userID: decoded.id,
+      mountainName,
+      trailName,
+      runCounter: newCount
+    }
+
+    instance.post('updateRun', run)
+      .then(res => {
+        dispatch(updateRunCount({ name: trailName, value: newCount }))
+        setTrailDialogOpen('')
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   useMapEvent("click", onDoubleClick);
@@ -79,21 +108,16 @@ const MapHandler = () => {
               pathOptions={{
                 color: 'purple',
                 weight: 15,
-                opacity: blueMountainTrails.trails[trail.name].isCompleted ? 0.5 : 0
+                opacity: blueMountainTrails.trails[trail.name].runCounter > 0 ? 0.5 : 0
               }}
               eventHandlers={{
                 click: () => {
                   console.log(trail)
-                  if (!blueMountainTrails.trails[trail.name].isCompleted) {
+                  if (blueMountainTrails.trails[trail.name].runCounter === 0) {
                     setClickedTrailName(trail.name)
-
-                    // axios function
-
-                    //   // open dialog with trail details and confirm button
-                    // dispatch(isCompleted(trail.name))
                   }
 
-                  if (blueMountainTrails.trails[trail.name].isCompleted) {
+                  if (blueMountainTrails.trails[trail.name].runCounter > 0) {
                     setTrailDialogOpen(trail.name);
                   }
                 },
@@ -109,8 +133,9 @@ const MapHandler = () => {
               trailDialogOpen={trail.name === trailDialogOpen}
               setTrailDialogOpen={setTrailDialogOpen}
               setTrailIncomplete={setTrailIncomplete}
+              updateTrailRunCount={updateTrailRunCount}
               trail={trail}
-              runCounter={blueMountainTrails.trails[trail.name].runCounter}
+              blueMountainTrails={blueMountainTrails}
             />
           </>
         )
