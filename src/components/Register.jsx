@@ -31,7 +31,6 @@ const SignUp = () => {
       firstName,
       lastName,
       email,
-      //bcrypt password
       password
     }
 
@@ -63,7 +62,7 @@ const SignUp = () => {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate sx={{ mt: 3 }}>
+          <Box sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
