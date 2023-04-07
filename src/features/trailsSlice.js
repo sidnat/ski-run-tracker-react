@@ -1,26 +1,37 @@
 import { createSlice } from '@reduxjs/toolkit';
+import blueMountain from '../assets/mapData/blue-mountain.json'
 
-const initialState = {
-    "name": "Blue Mountain",
-    "trails": {
-        "Rinus Run": {
-            "runCounter": 0
-        },
-        "Crooked Oak": {
-            "runCounter": 0
-        },
-        "Apple Bowl": {
-            "runCounter": 0
+const buildInitialState = (name) => {
+    let mountain
+
+    if (name === "Blue Mountain") {
+        mountain = blueMountain
+    }
+
+    const initialState = {
+        name: mountain.name,
+        trails: {}
+    }
+
+    for (const [key, value] of Object.entries(mountain.trails)) {
+        // console.log(`${key}: ${value}`);
+        initialState.trails[key] = {
+            name: value.name,
+            runCounter: 0,
+            difficulty: value.difficulty
         }
     }
-};
+
+    return initialState
+}
+
+const initialState = buildInitialState("Blue Mountain");
 
 export const trailsSlice = createSlice({
     name: 'trails',
     initialState,
     reducers: {
         increment: (state, action) => {
-
             state.trails[action.payload].runCounter += 1;
         },
         updateRunCount: (state, action) => {
