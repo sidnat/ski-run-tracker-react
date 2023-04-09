@@ -61,13 +61,17 @@ const SignIn = () => {
   const submit = () => {
     console.log('empass', email, password)
     // debugger
+
+
+
+
     instance.post("/login", { email, password })
       .then(res => {
-        console.log('res', res);
+        // console.log('res', res);
         setCookie('token', res.data.token, { path: '/' });
-        console.log('islogged')
-        dispatch(addUser(res.data))
-        dispatch(addToken(res.data.token))
+        console.log('token is logged')
+        // dispatch(addUser(res.data))
+        // dispatch(addToken(res.data.token))
         navigate('/map')
         // localStorage.setItem('token', user.data.token)
         // navigate('/protected')

@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useMapEvent } from "react-leaflet/hooks";
 import { Polyline } from "react-leaflet";
-import blueMountain from './blue-mountain.json'
+import blueMountain from '../assets/mapData/blue-mountain.json'
 import { useSelector, useDispatch } from 'react-redux';
 import {
   increment,
@@ -17,8 +17,8 @@ import jwt_decode from "jwt-decode";
 import moment from "moment";
 
 const MapHandler = () => {
-  const blueMountainTrails = useSelector(selectTrails)
-  const mountainName = blueMountainTrails.name
+  const mountainTrails = useSelector(selectTrails)
+  const mountainName = mountainTrails.name
   // const isLoggedIn = useSelector(selectUser)
   const dispatch = useDispatch();
   const [clickedTrailName, setClickedTrailName] = useState('');
@@ -108,16 +108,16 @@ const MapHandler = () => {
               pathOptions={{
                 color: 'purple',
                 weight: 15,
-                opacity: blueMountainTrails.trails[trail.name].runCounter > 0 ? 0.5 : 0
+                opacity: mountainTrails.trails[trail.name].runCounter > 0 ? 0.5 : 0
               }}
               eventHandlers={{
                 click: () => {
                   console.log(trail)
-                  if (blueMountainTrails.trails[trail.name].runCounter === 0) {
+                  if (mountainTrails.trails[trail.name].runCounter === 0) {
                     setClickedTrailName(trail.name)
                   }
 
-                  if (blueMountainTrails.trails[trail.name].runCounter > 0) {
+                  if (mountainTrails.trails[trail.name].runCounter > 0) {
                     setTrailDialogOpen(trail.name);
                   }
                 },
@@ -135,7 +135,7 @@ const MapHandler = () => {
               setTrailIncomplete={setTrailIncomplete}
               updateTrailRunCount={updateTrailRunCount}
               trail={trail}
-              blueMountainTrails={blueMountainTrails}
+              mountainTrails={mountainTrails}
             />
           </>
         )

@@ -21,11 +21,11 @@ const TrailDialog = (props) => {
     setTrailIncomplete,
     updateTrailRunCount,
     trail,
-    blueMountainTrails
+    mountainTrails
   } = props
   const [runCounterInput, setRunCounterInput] = useState(null);
   //pull counter from redux using trail name
-  const runCounter = blueMountainTrails.trails[trail.name].runCounter
+  const runCounter = mountainTrails.trails[trail.name].runCounter
 
   return (
     <Dialog open={trailDialogOpen} onClose={() => setTrailDialogOpen('')}>
