@@ -1,4 +1,4 @@
-import skiMap from '../assets/blue-mountain-ski-trails.png'
+import skiMap from '../assets/images/blue-mountain-ski-trails.png'
 import { useEffect } from "react";
 import MapHandler from './MapHandler'
 import Navbar from './Navbar'
@@ -6,36 +6,33 @@ import "./styles.css";
 import { MapContainer, ImageOverlay } from "react-leaflet";
 import { CRS } from "leaflet";
 import "leaflet/dist/leaflet.css";
-// import L from "leaflet";
-import instance from '../utils/axios'
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  // increment,
   updateRunCount,
   selectTrails
 } from '../features/trailsSlice';
-// import { selectUser } from "../features/userSlice";
-import jwt_decode from "jwt-decode";
 import { useCookies } from 'react-cookie';
+import useGetRuns from '../fetches/useGetRuns';
 
 const M = ({ width, height, zoom, center }) => {
   const hw = [height, width];
   const origin = [0, 0];
   const bounds = [origin, hw];
   const dispatch = useDispatch()
+  const getRuns = useGetRuns()
 
-  const [cookies,] = useCookies(['token']);
-  const decoded = jwt_decode(cookies.token);
-  const blueMountainTrails = useSelector(selectTrails)
-  const mountainName = blueMountainTrails.name
+  // const [cookies,] = useCookies(['token']);
+  // const mountainTrails = useSelector(selectTrails)
+  // const mountainName = mountainTrails.name
 
   useEffect(() => {
-    // instance.get('getRuns', { userID: decoded.id, mountainName })
-    instance.get(`getRuns?userID=${decoded.id}&mountainName=${mountainName}`)
+    getRuns
       .then(res => {
         const runsArray = res.data.runs
+        // console.log(runsArray)
 
         runsArray.forEach(run => {
+          // console.log(run)
           dispatch(updateRunCount({ name: run.trailName, value: run.runCounter }))
         })
       })
